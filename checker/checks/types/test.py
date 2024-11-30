@@ -18,6 +18,9 @@ class Test:
         self._browser = browser
         self._page = page
 
+    def __repr__(self):
+        return f"Тест(name={self.NAME})"
+
     async def run(self) -> "Result":
         raise NotImplementedError
 
