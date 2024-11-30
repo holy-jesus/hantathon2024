@@ -10,4 +10,4 @@ class Alt(Test):
         assert isinstance(result, list) and len(result) == 2
         total, with_alt = result
 
-        return Result(Alt, total / with_alt if all(total, with_alt) else 0)
+        return Result(Alt, total / with_alt if all((total, with_alt)) else 0)

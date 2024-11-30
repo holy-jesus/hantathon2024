@@ -14,5 +14,5 @@ class Buttons(Test):
         total, with_aria_label = result
 
         return Result(
-            Buttons, total / with_aria_label if all(total, with_aria_label) else 0
+            Buttons, total / with_aria_label if all((total, with_aria_label)) else 0
         )
