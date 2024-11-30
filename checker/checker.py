@@ -14,8 +14,9 @@ class Checker:
         if tests is None:
             tests = self.get_available_tests()
         async with self.manager as p:
-            browser = await p.firefox.launch(headless=False)
+            browser = await p.firefox.launch(headless=True)
             page = await browser.new_page()
+            await page.add_init_script(path="./init.js")
             await page.goto(url)
             results = []
             for test in tests:
