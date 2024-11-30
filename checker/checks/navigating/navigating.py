@@ -9,4 +9,4 @@ class Zoom(Test):
 беспрепятственно считывающих структуру и последовательность, в которой представлена такая информация;"""
 
     async def run(self):
-        pass
+        self._page.keyboard.press("Tab")
