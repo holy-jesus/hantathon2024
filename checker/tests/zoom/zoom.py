@@ -9,6 +9,9 @@ class Zoom(Test):
 
     async def run(self):
         await self._execute_js_file("js/zoom.js", 2.0)
-        result = await self._execute_js_file("js/check-horizontal-scrollbar.js")
+
+        result = await self._execute_js_file("js/has-horizontal-scrollbar.js")
+        assert isinstance(result, bool)
+
         await self._execute_js_file("js/zoom.js", 1.0)
-        return result
+        return not result
