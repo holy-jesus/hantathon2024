@@ -1,4 +1,5 @@
 from ..test import Test
+from ..result import Result
 
 
 class Zoom(Test):
@@ -14,4 +15,4 @@ class Zoom(Test):
         assert isinstance(result, bool)
 
         await self._execute_js_file("js/zoom.js", arg=1.0)
-        return not result
+        return Result(Zoom, not result)
