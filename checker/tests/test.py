@@ -1,3 +1,4 @@
+import inspect
 from typing import Any
 from pathlib import Path
 
@@ -18,13 +19,22 @@ class Test:
         raise NotImplementedError
 
     async def _execute_js_file(self, name: str, arg=None) -> Any | None:
-        file = Path() / name
+        # Определяем текущий модуль вызова
+        current_frame = inspect.currentframe()
+        caller_frame = current_frame.f_back
+        module = inspect.getmodule(caller_frame)
+
+        # Определяем путь к файлу, откуда был вызван метод
+        if module and module.__file__:
+            file = Path(module.__file__).parent / name
+        else:
+            raise RuntimeError("Не удалось определить путь к модулю")
 
         if not (await self._check_path(file)):
             return None
 
         async with aiofiles.open(file, "r") as f:
-            return await self._page.evaluate(f.read(), arg)
+            return await self._page.evaluate(await f.read(), arg)
 
     async def _check_path(self, path: Path) -> bool:
         return (

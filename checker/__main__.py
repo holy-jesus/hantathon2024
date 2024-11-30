@@ -5,7 +5,8 @@ from checker import Checker
 
 async def main():
     checker = Checker()
-    await checker.run_tests("https://www.google.com/")
+    results = await checker.run_tests("https://github.com/")
+    print(results)
 
 
 if __name__ == "__main__":

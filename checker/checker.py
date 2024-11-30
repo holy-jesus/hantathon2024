@@ -10,13 +10,15 @@ class Checker:
     def get_available_tests(self) -> tuple[Test]:
         return tests
 
-    async def run_tests(self, url: str, tests: list[Test] = None):
+    async def run_tests(self, url: str, tests: list[Test] = None) -> list:
         if tests is None:
             tests = self.get_available_tests()
         async with self.manager as p:
             browser = await p.firefox.launch(headless=False)
             page = await browser.new_page()
             await page.goto(url)
+            results = []
             for test in tests:
                 test: Test = test(browser, page)
-                await test.run()
+                results.append(await test.run())
+        return results

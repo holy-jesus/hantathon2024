@@ -1,7 +1,6 @@
 from ..test import Test
 
 
-
 class Zoom(Test):
     NAME = "Масштабирование"
     DESCRIPTION = """текстовая информация, размещаемая на официальном сайте, масштабируется 
