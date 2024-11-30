@@ -1,16 +1,27 @@
 import asyncio
+import argparse
 
 from checker import Checker
 from checks import Document
 
 
-async def main():
+async def main(url: str = None):
+    if not url:
+        url = "https://example.com/"
     checker = Checker()
-    results = await checker.run_tests(
-        "https://www.nalog.gov.ru/rn77/about_fts/fts/coordin/ksinv/8950813/"
-    )
+    results = await checker.run_tests(url)
     print(results)
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    parser = argparse.ArgumentParser(description="AccessScan: автоматизированная проверка доступности веб-сайтов")
+    parser.add_argument(
+        "--url",
+        type=str,
+        required=False,
+        help="URL веб-сайта для проверки доступности",
+        default="https://example.com/"
+    )
+    args = parser.parse_args()
+    url = args.url
+    asyncio.run(main(url))
