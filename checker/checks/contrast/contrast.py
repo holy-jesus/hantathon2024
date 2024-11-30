@@ -1,6 +1,6 @@
 import re
 
-from ..types import Test
+from ..types import Test, Result
 
 
 class Contrast(Test):
@@ -10,19 +10,29 @@ class Contrast(Test):
 
     async def run(self):
         uuids = await self._execute_js_file("js/contrast.js")
-        result = await self._execute_js_file(
-            "js/get-colors.js", self._page.locator(f"[AccessScan='{uuids[0]}']")
+        total = len(uuids)
+        with_right_contrast = 0
+        for uuid in uuids:
+            result = await self._execute_js_file(
+                "js/get-colors.js", self._page.locator(f"[AccessScan='{uuid}']")
+            )
+            if not isinstance(result, list) or len(result) != 2:
+                continue
+            background_color, text_color = map(self.__parse_rgb, result)
+            L1 = self.__calculate_relative_luminance(text_color)
+            L2 = self.__calculate_relative_luminance(background_color)
+            if L1 < L2:
+                L1, L2 = L2, L1
+            contrast_ratio = (L1 + 0.05) / (L2 + 0.05)
+            if contrast_ratio >= 4.5:
+                with_right_contrast += 1
+        if not total:
+            total = 1
+            with_right_contrast = 1
+        return Result(
+            Contrast,
+            (with_right_contrast / total) * 100,
         )
-        assert isinstance(result, list) and len(result) == 2
-        background_color, text_color = map(self.__parse_rgb, result)
-        L1 = self.__calculate_relative_luminance(text_color)
-        L2 = self.__calculate_relative_luminance(background_color)
-        if L1 < L2:
-            L1, L2 = L2, L1
-        contrast_ratio = (L1 + 0.05) / (L2 + 0.05)
-        if contrast_ratio < 4.5:
-            return False
-        return True
 
     def __parse_rgb(self, color_str: str) -> tuple[int, int, int]:
         """

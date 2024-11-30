@@ -12,7 +12,10 @@ class Buttons(Test):
 
         assert isinstance(result, list) and len(result) == 2
         total, with_aria_label = result
-
+        if not total:
+            total = 1
+            with_aria_label = 1
         return Result(
-            Buttons, total / with_aria_label if all((total, with_aria_label)) else 0
+            Buttons,
+            (with_aria_label / total) * 100,
         )

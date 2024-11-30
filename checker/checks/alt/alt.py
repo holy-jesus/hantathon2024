@@ -9,5 +9,7 @@ class Alt(Test):
         result = await self._execute_js_file("js/alt.js")
         assert isinstance(result, list) and len(result) == 2
         total, with_alt = result
-
-        return Result(Alt, total / with_alt if all((total, with_alt)) else 0)
+        if not total:
+            total = 1
+            with_alt = 1
+        return Result(Alt, (with_alt / total) * 100)
