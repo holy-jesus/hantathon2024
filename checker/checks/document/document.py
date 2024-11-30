@@ -5,10 +5,19 @@ from PyPDF2 import PdfReader
 import magic
 import pdfplumber
 
-from ..test import Test
+from ..types import Test
 
 
 class Document(Test):
+    NAME = "PDF Документы"
+    DESCRIPTION = """документы формата PDF, а также иные документы, 
+представленные на официальном сайте, доступны для чтения при помощи 
+вспомогательных технологий, включая программы экранного доступа, 
+и размечены в соответствии с положениями национального стандарта 
+Российской Федерации или на официальном сайте представлены альтернативные 
+версии таких документов, доступные для чтения при помощи вспомогательных 
+технологий, включая программы экранного доступа"""
+
     async def run(self):
         links = await self._page.eval_on_selector_all(
             "a[href]", "elements => elements.map(e => e.href)"
@@ -28,7 +37,7 @@ class Document(Test):
                     pdf = await self.__test_pdf(link)
                     if not pdf:
                         return False
-                
+
         return True
 
     async def __test_pdf(self, file_link: str):

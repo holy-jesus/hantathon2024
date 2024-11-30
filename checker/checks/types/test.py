@@ -1,10 +1,13 @@
 import inspect
-from typing import Any
+from typing import TYPE_CHECKING, Any
 from pathlib import Path
 
 import aiofiles
 import aiofiles.os as os
 from playwright.async_api import Browser, Page
+
+if TYPE_CHECKING:
+    from .result import Result
 
 
 class Test:
@@ -15,13 +18,13 @@ class Test:
         self._browser = browser
         self._page = page
 
-    async def run(self) -> bool:
+    async def run(self) -> "Result":
         raise NotImplementedError
 
     async def _execute_js_file(self, name: str, target=None, arg=None) -> Any | None:
         if target is None:
             target = self._page
-        
+
         current_frame = inspect.currentframe()
         caller_frame = current_frame.f_back
         module = inspect.getmodule(caller_frame)

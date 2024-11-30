@@ -1,9 +1,13 @@
 import re
 
-from ..test import Test
+from ..types import Test
 
 
 class Contrast(Test):
+    NAME = "Контраст текста"
+    DESCRIPTION = """информация, размещаемая на официальном сайте, соответствует 
+критериям оптимальной контрастности, предусмотренным национальным стандартом Российской Федерации"""
+
     async def run(self):
         uuids = await self._execute_js_file("js/contrast.js")
         result = await self._execute_js_file(

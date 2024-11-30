@@ -1,5 +1,5 @@
-from ..test import Test
-from ..result import Result
+from ..types.test import Test
+from ..types.result import Result
 
 
 class Zoom(Test):
