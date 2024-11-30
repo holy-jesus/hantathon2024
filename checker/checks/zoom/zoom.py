@@ -15,4 +15,5 @@ class Zoom(Test):
         assert isinstance(result, bool)
 
         await self._execute_js_file("js/zoom.js", arg=1.0)
-        return Result(Zoom, not result)
+        # return Result(Zoom, not result)
+        return not result
