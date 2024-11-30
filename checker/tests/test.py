@@ -17,16 +17,16 @@ class Test:
     async def run(self) -> bool:
         raise NotImplementedError
 
-    async def __execute_js_file(self, name: str, arg=None) -> Any | None:
+    async def _execute_js_file(self, name: str, arg=None) -> Any | None:
         file = Path() / name
 
-        if not (await self.__check_path(file)):
+        if not (await self._check_path(file)):
             return None
 
         async with aiofiles.open(file, "r") as f:
             return await self._page.evaluate(f.read(), arg)
 
-    async def __check_path(self, path: Path) -> bool:
+    async def _check_path(self, path: Path) -> bool:
         return (
             await os.path.exists(path)
             and await os.path.isfile(path)
