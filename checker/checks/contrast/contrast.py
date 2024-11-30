@@ -24,7 +24,6 @@ class Contrast(Test):
         """
         import re
 
-        # Регулярное выражение для RGB(A)
         match = re.match(r"rgba?\((\d+),\s*(\d+),\s*(\d+)", color_str)
         if not match:
             # Если цвет некорректный, возвращаем белый цвет как fallback
@@ -34,15 +33,12 @@ class Contrast(Test):
         return tuple(map(int, match.groups()))
 
     def __calculate_relative_luminance(self, color: tuple[int, int, int]):
-        # Преобразование R8bit, G8bit, B8bit в RsRGB, GsRGB, BsRGB
         RsRGB = color[0] / 255
         GsRGB = color[1] / 255
         BsRGB = color[2] / 255
 
-        # Преобразование в линейные значения
         R = RsRGB / 12.92 if RsRGB <= 0.03928 else ((RsRGB + 0.055) / 1.055) ** 2.4
         G = GsRGB / 12.92 if GsRGB <= 0.03928 else ((GsRGB + 0.055) / 1.055) ** 2.4
         B = BsRGB / 12.92 if BsRGB <= 0.03928 else ((BsRGB + 0.055) / 1.055) ** 2.4
 
-        # Расчет относительной яркости
         return 0.2126 * R + 0.7152 * G + 0.0722 * B
