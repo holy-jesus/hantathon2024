@@ -6,7 +6,7 @@ from checks import Contrast
 
 async def main():
     checker = Checker()
-    results = await checker.run_tests("https://github.com/", [])
+    results = await checker.run_tests("https://example.com/", [Contrast])
     print(results)
 
 

@@ -18,13 +18,14 @@ class Test:
     async def run(self) -> bool:
         raise NotImplementedError
 
-    async def _execute_js_file(self, name: str, arg=None) -> Any | None:
-        # Определяем текущий модуль вызова
+    async def _execute_js_file(self, name: str, target=None, arg=None) -> Any | None:
+        if target is None:
+            target = self._page
+        
         current_frame = inspect.currentframe()
         caller_frame = current_frame.f_back
         module = inspect.getmodule(caller_frame)
 
-        # Определяем путь к файлу, откуда был вызван метод
         if module and module.__file__:
             file = Path(module.__file__).parent / name
         else:
@@ -34,7 +35,7 @@ class Test:
             return None
 
         async with aiofiles.open(file, "r") as f:
-            return await self._page.evaluate(await f.read(), arg)
+            return await target.evaluate(await f.read(), arg)
 
     async def _check_path(self, path: Path) -> bool:
         return (

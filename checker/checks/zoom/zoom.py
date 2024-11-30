@@ -8,10 +8,10 @@ class Zoom(Test):
 вспомогательных технологий, без потери функциональности и без появления горизонтальной полосы прокрутки;"""
 
     async def run(self):
-        await self._execute_js_file("js/zoom.js", 2.0)
+        await self._execute_js_file("js/zoom.js", arg=2.0)
 
         result = await self._execute_js_file("js/has-horizontal-scrollbar.js")
         assert isinstance(result, bool)
 
-        await self._execute_js_file("js/zoom.js", 1.0)
+        await self._execute_js_file("js/zoom.js", arg=1.0)
         return not result

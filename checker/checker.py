@@ -1,6 +1,8 @@
+from pathlib import Path
+
 from playwright.async_api import async_playwright
 
-from .checks import Test, tests
+from checks import Test, tests
 
 
 class Checker:
@@ -16,7 +18,6 @@ class Checker:
         async with self.manager as p:
             browser = await p.firefox.launch(headless=True)
             page = await browser.new_page()
-            await page.add_init_script(path="./init.js")
             await page.goto(url)
             results = []
             for test in tests:
