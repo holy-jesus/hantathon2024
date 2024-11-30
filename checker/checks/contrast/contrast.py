@@ -17,6 +17,8 @@ class Contrast(Test):
         print(contrast_ratio)
         if contrast_ratio < 4.5:
             print("Контрастность недостаточная!")
+            return False
+        return True
 
     def __parse_rgb(self, color_str: str) -> tuple[int, int, int]:
         """

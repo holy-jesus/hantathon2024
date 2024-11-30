@@ -1,12 +1,12 @@
 import asyncio
 
 from checker import Checker
-from checks import Contrast
+from checks import Buttons
 
 
 async def main():
     checker = Checker()
-    results = await checker.run_tests("https://example.com/", [Contrast])
+    results = await checker.run_tests("https://example.com/", [Buttons])
     print(results)
 
 
