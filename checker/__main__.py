@@ -1,7 +1,7 @@
 import asyncio
 
 from checker import Checker
-from tests import Contrast
+from checks import Contrast
 
 
 async def main():

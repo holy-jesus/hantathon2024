@@ -1,6 +1,6 @@
 from playwright.async_api import async_playwright
 
-from tests import Test, tests
+from .checks import Test, tests
 
 
 class Checker:
