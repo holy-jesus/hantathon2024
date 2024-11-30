@@ -1,3 +1,5 @@
+import re
+
 from ..test import Test
 
 
@@ -14,9 +16,7 @@ class Contrast(Test):
         if L1 < L2:
             L1, L2 = L2, L1
         contrast_ratio = (L1 + 0.05) / (L2 + 0.05)
-        print(contrast_ratio)
         if contrast_ratio < 4.5:
-            print("Контрастность недостаточная!")
             return False
         return True
 
@@ -24,14 +24,9 @@ class Contrast(Test):
         """
         Преобразует строку RGB или RGBA в кортеж (R, G, B).
         """
-        import re
-
         match = re.match(r"rgba?\((\d+),\s*(\d+),\s*(\d+)", color_str)
         if not match:
-            # Если цвет некорректный, возвращаем белый цвет как fallback
             return (255, 255, 255)
-
-        # Извлекаем значения R, G, B
         return tuple(map(int, match.groups()))
 
     def __calculate_relative_luminance(self, color: tuple[int, int, int]):
