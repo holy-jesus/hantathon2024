@@ -14,6 +14,8 @@ if TYPE_CHECKING:
 class Test:
     NAME: str
     DESCRIPTION: str
+    DEFIANCE: str
+    RECOMMENDATION: str
 
     def __init__(self, browser: Browser, page: Page) -> None:
         self._browser = browser
