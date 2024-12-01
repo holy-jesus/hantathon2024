@@ -17,7 +17,7 @@ class SiteURL(BaseModel):
 
 @app.get("/", response_class=HTMLResponse)
 async def read_root(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request})
+    return templates.TemplateResponse("page2.html", {"request": request})
 
 @app.post("/check/", response_class=JSONResponse)
 async def read_site(site_url: SiteURL):

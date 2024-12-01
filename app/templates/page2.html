@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+  <link href="https://fonts.googleapis.com/css2?family=Aqum+Two&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Проверка доступности</title>
+</head>
+
+<body>
+  <div class="title-section">
+    <h1>ПРОВЕРКА ДОСТУПНОСТИ</h1>
+  </div>
+
+  <div class="subtitle-section">
+    <h2>Автоматизированная проверка доступности веб-сайта для пользователей с нарушениями зрения</h2>
+  </div>
+
+  <div class="input-section">
+    <input type="text" id="url-input" placeholder="Введите ссылку на веб-сайт" />
+    <button id="analyze-btn">Анализировать</button>
+    <button id="btn-archive" class="white-button">Архив</button>
+  </div>
+
+  <main class="tab-content result-tab">
+    <div class="result-section">
+        <h2><strong>Результат проверки [<a href="/#">URL</a>]</strong></h2>
+        <p>Выявлено проблем 7/16</p>
+    </div>
+    <div class="result-section"></div>
+
+    <div class="score-container">
+        <div class="issues">
+            <h3>Выявленные проблемы</h3>
+            <ul>
+                <li>недостаточный контраст текста</li>
+                <li>отсутствие альтернативного текста для изображений</li>
+                <li>нарушенная структура заголовков</li>
+            </ul>        
+        </div>
+        <div class="score">
+            <h3>Общая оценка</h3>
+            <div class="indicator-container">
+                <div class="indicator" id="indicator"></div>
+                <div class="value-text" id="valueText">0</div>
+            </div> 
+        </div>
+    </div>
+    <div class="score-container">
+      <div class="report-container">
+          <a href="#" class="report-link">Полный отчет</a>
+      </div>
+      <div class="report-container">
+        <input type="checkbox" id="toggle">
+        <label class="toggle-label" for="toggle" class="toggle-button">Подробная оценка</label>
+        <div class="details">
+            <h3>Детали оценки</h3>
+            <p>Общая оценка: 42 из 100</p>
+            <p>Объяснение: Оценка ниже 50% указывает на то, что необходимо улучшить доступность сайта.</p>
+        </div>
+        <!-- <a href="#" class="report-link">Подробная оценка</a> -->
+    </div>
+    </div>
+</main>
+
+
+
+  <script src="/static/script.js"></script>
+</body>
+
+</html>

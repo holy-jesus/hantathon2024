@@ -52,3 +52,22 @@ analyzeBtn.addEventListener('click', async () => {
         analyzeBtn.disabled = false;
     }
 });
+
+
+function updateIndicator(value) {
+    const indicator = document.getElementById('indicator');
+    const valueText = document.getElementById('valueText');
+    
+    value = Math.max(0, Math.min(value, 100));
+    
+    indicator.style.width = value + '%';
+
+    const red = 255 - Math.floor((value / 100) * 255);  
+    const green = Math.floor((value / 100) * 255);      
+    indicator.style.backgroundColor = `rgb(${red}, ${green}, 0)`;
+
+    valueText.innerText = value + ' / 100';
+}
+
+// const totalScore = 42; 
+// updateIndicator(totalScore);

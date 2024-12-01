@@ -1,9 +1,35 @@
+@font-face {
+  font-family: 'Aqum Two'; 
+  src: url('fonts/Aqum2classic.otf') format('otf'); 
+  font-weight: normal;
+  font-style: normal; 
+}
+
+@font-face {
+  font-family: 'Inter-medium'; 
+  src: url('fonts/Inter_28pt-Medium.ttf') format('ttf'); 
+  font-weight: normal;
+  font-style: normal; 
+}
+
+@font-face {
+  font-family: 'Inter-bold'; 
+  src: url('fonts/Inter_28pt-Bold.ttf') format('ttf'); 
+  font-weight: bold;
+  font-style: normal; 
+}
+
 body {
-    font-family: Arial, sans-serif;
-    margin: 0;
+    font-family: 'Inter-medium', sans-serif;
+    font-size: small;
     padding: 0;
     color: #333;
-    background-color: #f4f4f4;
+    background-image: url('background.png');
+    background-size: cover; 
+    background-repeat: no-repeat; 
+    background-position: center;
+    height: 100vh; 
+    margin: 0;
   }
   
   header {
@@ -12,12 +38,14 @@ body {
   
   .title-section {
     text-align: center;
-    padding: 20px 0 10px;
+    /* padding: 20px 0 10px; */
+    padding-top: 7%;
   }
   
   .title-section h1 {
-    font-size: 2rem;
+    font-size: 3rem;
     margin: 0;
+    font-family: 'Aqum Two', sans-serif;
   }
   
   .subtitle-section {
@@ -27,20 +55,20 @@ body {
   
   .subtitle-section p {
     font-size: 1rem;
-    color: #555;
+    color: #000000;
   }
   
   .input-section {
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
   }
   
   .input-section input {
-    width: 400px;
+    width: 500px;
     max-width: 90%;
     padding: 10px;
     border: 1px solid #ccc;
-    border-radius: 4px;
+    border-radius: 10px;
   }
   
   .toggle-buttons {
@@ -56,14 +84,14 @@ body {
     border: 1px solid #ccc;
     border-radius: 4px;
     cursor: pointer;
-    background-color: #f9f9f9;
+    background-color: #d30101;
     color: #333;
   }
   
   .toggle-btn.active {
-    background-color: #4caf50;
+    background-color: #000000;
     color: white;
-    border-color: #4caf50;
+    border-color: #000000;
   }
   
   .tab-content {
@@ -78,6 +106,9 @@ body {
     border-radius: 8px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     max-width: 800px;
+    margin-bottom: 20px;
+    flex-wrap: wrap; 
+    justify-content: space-between; 
   }
   
   .subtitle-section {
@@ -90,7 +121,7 @@ body {
   .subtitle-section p {
     font-size: 1rem;
     line-height: 1.6;
-    color: #666;
+    color: #000000;
     padding: 0 10px;
   }
   
@@ -112,8 +143,8 @@ body {
   
   .toggle-buttons .toggle-btn.active {
     color: #fff;
-    background: #4caf50;
-    border-color: #4caf50;
+    background: #000000;
+    border-color: #000000;
   }
   
   .toggle-buttons .toggle-btn:hover {
@@ -124,7 +155,7 @@ body {
     margin: 0 auto;
     padding: 20px;
     background: white;
-    max-width: 800px;
+    max-width: 1000px;
     border-radius: 10px;
     box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
   }
@@ -133,6 +164,7 @@ body {
     font-size: 1.5rem;
     color: #333;
     margin-top: 0;
+    margin-bottom: 0;
   }
   
   .result-section .issues ul {
@@ -141,7 +173,7 @@ body {
   }
   
   .result-section .issues ul li {
-    margin-bottom: 10px;
+    /* margin-bottom: 5px; */
     color: #555;
   }
   
@@ -161,7 +193,7 @@ body {
   .report-link {
     display: inline-block;
     margin-top: 20px;
-    color: #4caf50;
+    color: #000000;
     font-weight: bold;
     text-decoration: none;
   }
@@ -179,28 +211,172 @@ body {
     gap: 10px;
   }
   
-  .input-section input {
-    width: 400px;
-    max-width: 90%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-  }
-  
   .input-section button {
     padding: 10px 20px;
-    background-color: #4caf50;
+    background-color: #000000;
     color: white;
     border: none;
-    border-radius: 4px;
+    border-radius: 10px;
     cursor: pointer;
     font-size: 1rem;
   }
   
   .input-section button:hover {
-    background-color: #45a049;
+    background-color: #282828;
+  }
+
+  .input-section .white-button {
+    background-color: white;
+    color: black;
+    border: 1px solid #ccc; 
+  }
+  
+  .input-section .white-button:hover {
+    background-color: #f0f0f0; 
   }
   
   .hidden {
     display: none;
   }
+
+  a {
+    text-decoration: none; 
+    color: #529afe; 
+}
+
+.result-section {
+  padding: 20px; 
+  padding-bottom: 0px;
+}
+
+.score-container {
+  display: flex; 
+  justify-content: space-between;
+  margin-left: 2.7%;
+  flex: 0 0 calc(50% - 10px); 
+}
+
+.score, .issues {
+  flex: 1; 
+  margin-right: 20px;
+}
+
+.score:last-child, .issues:last-child {
+  margin-right: 0; 
+}
+
+.report-container {
+  margin-top: 20px; 
+  width: 100%; 
+}
+.wrapper {
+  width: 400px;
+}
+.title {
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+.indicator-container {
+  width: 70%;
+  height: 30px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #f0f0f0;
+  overflow: hidden;
+  position: relative;
+}
+.indicator {
+  height: 100%;
+  width: 0;
+  border-radius: 5px;
+  transition: width 0.5s ease;
+}
+.value-text {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  font-weight: bold;
+  color: #333;
+}
+.tab-content {              
+  flex-wrap: wrap;                  
+  justify-content: space-between;   
+  max-width: 800px;                 
+  margin: 0 auto;                   
+}
+
+.indicator-container {
+  width: 90%;                      
+  height: 20px;                     
+  border: 1px solid #ccc;          
+  border-radius: 5px;              
+  background-color: #f0f0f0;       
+  overflow: hidden;                 
+  position: relative;               
+}
+
+.indicator {
+  height: 100%;                    
+  width: 0;                        
+  border-radius: 5px;              
+  transition: width 0.5s ease;      
+}
+
+.value-text {
+  position: absolute;                
+  left: 50%;                        
+  top: 50%;                         
+  transform: translate(-50%, -50%); 
+  font-weight: bold;                
+  color: #333;                      
+}
+.score-container {
+  width: 100%;                    
+  display: flex;                  
+  justify-content: space-between; 
+  margin-top: 20px;               
+}
+
+.issues, .score {
+  flex: 1;                        
+  margin-right: 10px;             
+}
+
+.score .score-container {
+  margin-right: 0;                
+}
+.details {
+  display: none; 
+  margin-top: 10px; 
+  border: 1px solid #ccc; 
+  padding: 15px; 
+  background-color: #f9f9f9; 
+  border-radius: 5px; 
+}
+
+input[type="checkbox"] {
+  display: none; 
+}
+
+input[type="checkbox"]:checked ~ .details {
+  display: block; 
+}
+
+.toggle-button {
+  background-color: #007BFF; 
+  color: white; 
+  border: none; 
+  padding: 10px 15px; 
+  border-radius: 5px; 
+  cursor: pointer; 
+  margin-top: 10px;
+}
+
+.toggle-label {
+  cursor: pointer; 
+}
+
+.toggle-button:hover {
+  background-color: #0056b3; 
+}
