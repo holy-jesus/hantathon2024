@@ -1,7 +1,7 @@
 from playwright.async_api import async_playwright
 from loguru import logger
 
-from checks import Test, tests
+from .checks import Test, tests
 
 
 class Checker:

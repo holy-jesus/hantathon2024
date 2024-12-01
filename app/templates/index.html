@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Проверка доступности</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <header>
+    <!-- Пустой Header для будущего использования -->
+  </header>
+
+  <div class="title-section">
+    <h1>ПРОВЕРКА ДОСТУПНОСТИ</h1>
+  </div>
+
+  <div class="subtitle-section">
+    <p>Автоматизированная проверка доступности веб-сайта для пользователей с нарушениями зрения</p>
+  </div>
+
+  <div class="input-section">
+    <input type="text" id="url-input" placeholder="Введите ссылку на веб-сайт" />
+    <button id="analyze-btn">Анализировать</button>
+  </div>
+
+  <div class="toggle-buttons">
+    <button class="toggle-btn active" data-tab="result">Результат</button>
+    <button class="toggle-btn" data-tab="history">История</button>
+  </div>
+
+  <main class="tab-content result-tab">
+    <div class="result-section">
+      <h2>РЕЗУЛЬТАТ ПРОВЕРКИ [URL]</h2>
+      <p>Оценка доступности и выявленные проблемы:</p>
+      <div class="score">
+        <p>ОБЩАЯ ОЦЕНКА</p>
+        <div class="rating">100</div>
+      </div>
+      <div class="issues">
+        <p>ВЫЯВЛЕННЫЕ ПРОБЛЕМЫ</p>
+        <ul>
+          <li>недостаточный контраст текста</li>
+          <li>отсутствие альтернативного текста для изображений</li>
+          <li>нарушенная структура заголовков</li>
+        </ul>
+      </div>
+      <a href="#" class="report-link">ПОЛНЫЙ ОТЧЕТ</a>
+    </div>
+  </main>
+
+  <main class="tab-content history-tab hidden">
+    <div class="history-section">
+      <h2>ИСТОРИЯ ПРОВЕРОК</h2>
+      <p>Здесь вы можете посмотреть историю ваших проверок.</p>
+    </div>
+  </main>
+
+  <script src="/static/script.js"></script>
+</body>
+</html>
