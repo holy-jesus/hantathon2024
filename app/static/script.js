@@ -71,3 +71,9 @@ function updateIndicator(value) {
 
 // const totalScore = 42; 
 // updateIndicator(totalScore);
+
+document.querySelectorAll('.custom-chart').forEach(chart => {
+    const value = chart.getAttribute('data-value');
+    const percentage = (value / 100) * 360; 
+    chart.style.background = `conic-gradient(#4CAF50 0deg, #4CAF50 ${percentage}deg, #FFC107 ${percentage}deg)`;
+});
