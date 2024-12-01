@@ -1,11 +1,13 @@
 import io
 
 from aiohttp import ClientSession
-from PyPDF2 import PdfReader
+from pypdf import PdfReader
+from loguru import logger
 import magic
 import pdfplumber
+import fitz
 
-from ..types import Test
+from ..types import Test, Result
 
 
 class Document(Test):
@@ -20,13 +22,14 @@ class Document(Test):
 
     async def run(self):
         links = await self._page.eval_on_selector_all(
-            "a[href]", "elements => elements.map(e => e.href)"
+            "a[href], iframe", "elements => elements.map(e => e.href)"
         )
 
         # set чтобы оставить только уникальные ссылки и удалить дубликаты
-        file_links = list(
-            set(link for link in links if link.endswith((".pdf", ".docx")))
-        )
+        file_links = []
+        for link in links:
+            if link and link not in file_links and link.endswith((".pdf", ".docx")):
+                file_links.append(link)
         if not file_links:
             return True
         if not any(link.endswith(".pdf") for link in file_links):
@@ -34,26 +37,55 @@ class Document(Test):
         else:
             for link in file_links:
                 if link.endswith(".pdf"):
-                    pdf = await self.__test_pdf(link)
-                    if not pdf:
-                        return False
-
+                    result = await self.__test_pdf(link)
+                    result.percentage
         return True
 
     async def __test_pdf(self, file_link: str):
         async with ClientSession() as session:
             response = await session.get(file_link)
             content = await response.read()
-        mime = magic.from_file(content)
-        if mime != "application/pdf":
-            # Мы не можем проверить данный PDF файл, возвращаем будто всё норм
-            return True
-        return self.__check_text_accessibility(content) and self.__check_struct(content)
+        try:
+            mime = magic.from_buffer(content, mime=True)
+            if mime != "application/pdf":
+                # Мы не можем проверить данный PDF файл, возвращаем будто всё норм
+                logger.info("Скачанный файл не является PDF, пропускаю.")
+                return Result(Document, 100.0)
+            text = self.__check_text_accessibility(content)
+            struct = self.__check_struct(content)
+            alt_text = self.__check_alt_text(content)
+            metadata = self.__check_metadata(content)
+            return Result(Document, (sum((text, struct, alt_text, metadata)) / 400) * 100)
+        except Exception as e:
+            logger.error("Произошла ошибка при обработке PDF файла")
+            logger.exception(e)
+            return Result(Document, 100.0)
 
     def __check_text_accessibility(self, file: bytes) -> bool:
         with pdfplumber.open(io.BytesIO(file)) as pdf:
-            return any(page.extract_text() for page in pdf.pages)
+            return 100.0 if any(page.extract_text() for page in pdf.pages) else 0.0
 
     def __check_struct(self, file: bytes) -> bool:
         pdf = PdfReader(io.BytesIO(file))
-        return "/StructTreeRoot" in pdf.trailer["/Root"]
+        return 100.0 if "/StructTreeRoot" in pdf.trailer["/Root"] else 0.0
+
+    def __check_alt_text(self, file: bytes) -> bool:
+        total = 0
+        with_alt_text = 0
+        doc = fitz.open(stream=file)
+        for page_num in range(len(doc)):
+            page = doc[page_num]
+            for img in page.get_images(full=True):
+                total += 1
+                if "alt_text" in img:
+                    with_alt_text += 1
+        if not total:
+            total = 1
+            with_alt_text = 1
+        return (with_alt_text / total) * 100
+    
+    def __check_metadata(self, file: bytes) -> bool:
+        reader = PdfReader(io.BytesIO(file))
+        metadata = reader.metadata
+        required_fields = ['/Title', '/Author', '/Keywords']
+        return 100.0 if any(field in metadata for field in required_fields) else 0.0
