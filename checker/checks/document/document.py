@@ -27,21 +27,24 @@ class Document(Test):
 
         # set чтобы оставить только уникальные ссылки и удалить дубликаты
         file_links = []
+        total = 0
+        total_percentage = 0
         for link in links:
             if link and link not in file_links and link.endswith((".pdf", ".docx")):
                 file_links.append(link)
         if not file_links:
-            return True
+            return Result(Document, 100.0)
         if not any(link.endswith(".pdf") for link in file_links):
-            return True
+            return Result(Document, 100.0)
         else:
             for link in file_links:
                 if link.endswith(".pdf"):
-                    result = await self.__test_pdf(link)
-                    result.percentage
-        return True
+                    percentage = await self.__test_pdf(link)
+                    total_percentage += percentage
+                    total += 1
+        return Result(Document, total_percentage / total)
 
-    async def __test_pdf(self, file_link: str):
+    async def __test_pdf(self, file_link: str) -> float:
         async with ClientSession() as session:
             response = await session.get(file_link)
             content = await response.read()
@@ -50,16 +53,16 @@ class Document(Test):
             if mime != "application/pdf":
                 # Мы не можем проверить данный PDF файл, возвращаем будто всё норм
                 logger.info("Скачанный файл не является PDF, пропускаю.")
-                return Result(Document, 100.0)
+                return 100.0
             text = self.__check_text_accessibility(content)
             struct = self.__check_struct(content)
             alt_text = self.__check_alt_text(content)
             metadata = self.__check_metadata(content)
-            return Result(Document, (sum((text, struct, alt_text, metadata)) / 400) * 100)
+            return sum((text, struct, alt_text, metadata)) / 4
         except Exception as e:
             logger.error("Произошла ошибка при обработке PDF файла")
             logger.exception(e)
-            return Result(Document, 100.0)
+            return 100.0
 
     def __check_text_accessibility(self, file: bytes) -> bool:
         with pdfplumber.open(io.BytesIO(file)) as pdf:
