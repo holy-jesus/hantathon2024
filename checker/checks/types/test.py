@@ -5,6 +5,7 @@ from pathlib import Path
 import aiofiles
 import aiofiles.os as os
 from playwright.async_api import Browser, Page
+from loguru import logger
 
 if TYPE_CHECKING:
     from .result import Result
@@ -18,15 +19,14 @@ class Test:
         self._browser = browser
         self._page = page
 
-    def __repr__(self):
-        return f"Тест(name={self.NAME})"
-
     async def run(self) -> "Result":
         raise NotImplementedError
 
     async def _execute_js_file(self, name: str, target=None, arg=None) -> Any | None:
         if target is None:
             target = self._page
+
+        logger.trace(f"Запускаю JS файл {name}, target={target}")
 
         current_frame = inspect.currentframe()
         caller_frame = current_frame.f_back
@@ -38,10 +38,13 @@ class Test:
             raise RuntimeError("Не удалось определить путь к модулю")
 
         if not (await self._check_path(file)):
+            logger.error(f"Не смог найти JS файл: {name}")
             return None
 
         async with aiofiles.open(file, "r") as f:
-            return await target.evaluate(await f.read(), arg)
+            result = await target.evaluate(await f.read(), arg)
+            logger.trace(f"JS скрипт вернул {result}")
+            return result
 
     async def _check_path(self, path: Path) -> bool:
         return (
