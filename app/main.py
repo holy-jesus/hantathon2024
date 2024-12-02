@@ -44,7 +44,7 @@ async def read_site(request: Request):
             response["recommendations"].append(result.test.RECOMMENDATION)
     response["total"] = response["total"] / len(results)
     response["file"] = str(uuid4()) + ".docx"
-    with open(Path(tempfile.gettempdir()) / response['file'], "wb") as f:
+    with open(Path(tempfile.gettempdir()) / response["file"], "wb") as f:
         f.write(file.getvalue())
     files.append(response["file"])
     return response
@@ -54,7 +54,7 @@ async def read_site(request: Request):
 async def get_file(file: str):
     if file not in files:
         return
-    return FileResponse(f"/tmp/{file}")
+    return FileResponse(Path(tempfile.gettempdir()) / file)
 
 
 @app.exception_handler(HTTPException)
