@@ -11,6 +11,10 @@ from ..types import Test, Result
 
 
 class Document(Test):
+    """
+    Тест для проверки доступности PDF-документов на сайте.
+    """
+
     NAME = "PDF Документы"
     DESCRIPTION = """документы формата PDF, а также иные документы, 
 представленные на официальном сайте, доступны для чтения при помощи 
@@ -19,19 +23,29 @@ class Document(Test):
 Российской Федерации или на официальном сайте представлены альтернативные 
 версии таких документов, доступные для чтения при помощи вспомогательных 
 технологий, включая программы экранного доступа"""
+    DEFIANCE = "PDF документы не размечены по ГОСТ Р 70176-2022 и не представлены в альтернативных версиях"
+    RECOMMENDATION = "Для PDF-документов создавайте альтернативные версии в формате HTML, доступные для чтения с помощью экранных чтецов."
 
     async def run(self):
+        """
+        Запускает тест доступности для всех PDF-файлов на странице.
+
+        Returns:
+            Result: Объект результата теста, содержащий название теста и процент успеха.
+        """
         links = await self._page.eval_on_selector_all(
             "a[href], iframe", "elements => elements.map(e => e.href)"
         )
 
-        # set чтобы оставить только уникальные ссылки и удалить дубликаты
+        # Собираем уникальные ссылки на PDF и DOCX файлы
         file_links = []
         total = 0
         total_percentage = 0
         for link in links:
             if link and link not in file_links and link.endswith((".pdf", ".docx")):
                 file_links.append(link)
+
+        # Если нет PDF-файлов, тест считается пройденным
         if not file_links:
             return Result(Document, 100.0)
         if not any(link.endswith(".pdf") for link in file_links):
@@ -45,13 +59,22 @@ class Document(Test):
         return Result(Document, total_percentage / total)
 
     async def __test_pdf(self, file_link: str) -> float:
+        """
+        Проверяет доступность PDF-файла по заданной ссылке.
+
+        Args:
+            file_link (str): Ссылка на PDF-файл.
+
+        Returns:
+            float: Процент успеха теста для файла (0.0–100.0).
+        """
         async with ClientSession() as session:
             response = await session.get(file_link)
             content = await response.read()
         try:
             mime = magic.from_buffer(content, mime=True)
             if mime != "application/pdf":
-                # Мы не можем проверить данный PDF файл, возвращаем будто всё норм
+                # Если файл не является PDF, возвращаем успешный результат
                 logger.info("Скачанный файл не является PDF, пропускаю.")
                 return 100.0
             text = self.__check_text_accessibility(content)
@@ -65,14 +88,50 @@ class Document(Test):
             return 100.0
 
     def __check_text_accessibility(self, file: bytes) -> bool:
+        """
+        Проверяет, содержит ли PDF текст, доступный для чтения.
+
+        Args:
+            file (bytes): Содержимое PDF-файла.
+
+        Returns:
+            bool: 100.0, если текст доступен, иначе 0.0.
+        """
+        DEFIANCE = "Текст в PDF документах не доступен для чтения и копирования"
+        RECOMMENDATION = "Убедитесь, что текст в PDF документе не представлен в виде изображений без текстового эквивалента. Текст должен быть доступен для чтения и копирования."
+
         with pdfplumber.open(io.BytesIO(file)) as pdf:
             return 100.0 if any(page.extract_text() for page in pdf.pages) else 0.0
 
     def __check_struct(self, file: bytes) -> bool:
+        """
+        Проверяет, содержит ли PDF структурированные теги.
+
+        Args:
+            file (bytes): Содержимое PDF-файла.
+
+        Returns:
+            bool: 100.0, если структура есть, иначе 0.0.
+        """
+        DEFIANCE = "PDF документы не содержат навигационных элементов"
+        RECOMMENDATION = "В PDF документы добавьте навигационные элементы, такие как оглавление, закладки, ссылки."
+
         pdf = PdfReader(io.BytesIO(file))
         return 100.0 if "/StructTreeRoot" in pdf.trailer["/Root"] else 0.0
 
     def __check_alt_text(self, file: bytes) -> bool:
+        """
+        Проверяет наличие альтернативного текста для изображений в PDF.
+
+        Args:
+            file (bytes): Содержимое PDF-файла.
+
+        Returns:
+            bool: Процент изображений с альтернативным текстом (0.0–100.0).
+        """
+        DEFIANCE = "Отсутствуют текстовые альтернативы для изображений и графики в PDF документах"
+        RECOMMENDATION = "Для каждого изображения и графического элемента PDF документе добавьте текстовые альтернативы, которые описывают их содержание или функцию."
+
         total = 0
         with_alt_text = 0
         doc = fitz.open(stream=file)
@@ -86,9 +145,21 @@ class Document(Test):
             total = 1
             with_alt_text = 1
         return (with_alt_text / total) * 100
-    
+
     def __check_metadata(self, file: bytes) -> bool:
+        """
+        Проверяет, содержит ли PDF обязательные метаданные.
+
+        Args:
+            file (bytes): Содержимое PDF-файла.
+
+        Returns:
+            bool: 100.0, если хотя бы одно обязательное поле есть, иначе 0.0.
+        """
+        DEFIANCE = "В PDF документах не применяются стили и не заполняются метаданные"
+        RECOMMENDATION = "Используйте стили и метаданные (включая заголовки, авторов и ключевые слова) для улучшения организации PDF документа."
+
         reader = PdfReader(io.BytesIO(file))
         metadata = reader.metadata
-        required_fields = ['/Title', '/Author', '/Keywords']
+        required_fields = ["/Title", "/Author", "/Keywords"]
         return 100.0 if any(field in metadata for field in required_fields) else 0.0
