@@ -22,8 +22,8 @@
 2. Установите Playwright, следуя [официальной документации](https://playwright.dev/python/docs/intro).
 3. Клонируйте репозиторий:
    ```bash
-   git clone https://github.com/holy-jesus/hackathon2024
-   cd hackathon2024
+   git clone https://github.com/holy-jesus/hantathon2024
+   cd hantathon2024
    ```
 4. Установите зависимости:
    ```bash
