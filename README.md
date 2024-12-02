@@ -59,4 +59,4 @@ python checker/ --url https://example.com
 
 ## Лицензия
 
-AccessScan распространяется под лицензией MIT. Ознакомьтесь с текстом лицензии в файле [LICENSE](LICENSE).
+AccessScan распространяется под лицензией MIT. Ознакомьтесь с текстом лицензии в файле [LICENSE](LICENSE.md).
