@@ -36,11 +36,11 @@ class Buttons(Test):
         # Проверяем, что результат корректен и содержит два значения: общее количество и количество с описанием
         assert isinstance(result, list) and len(result) == 2
         total, xpaths = result
-        without_aria_label = len(xpaths)
+        with_aria_label = total - len(xpaths)
         if not total:
             total = 1
-            without_aria_label = 1
-        final_score = 100 - ((without_aria_label / total) * 100)
+            with_aria_label = 1
+        final_score = (with_aria_label / total) * 100
         if final_score != 100.0:
             self._report.add_defiance(self.DEFIANCE)
             self._report.add_recommendation(self.RECOMMENDATION)
