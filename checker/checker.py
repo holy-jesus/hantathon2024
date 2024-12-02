@@ -47,7 +47,8 @@ class Checker:
             browser = await p.firefox.launch(headless=True)
             page = await browser.new_page()
             await page.goto(url)
-
+            screenshot = await page.screenshot()
+            report.set_screenshot(screenshot)
             results: list[Result] = []
             total = 0
             for test in tests:

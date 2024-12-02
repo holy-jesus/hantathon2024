@@ -2,7 +2,7 @@ from datetime import datetime
 from io import BytesIO
 
 from docx import Document
-from docx.shared import RGBColor, Pt
+from docx.shared import RGBColor, Pt, Mm
 from docx.text.paragraph import Paragraph
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.oxml.shared import OxmlElement, qn
@@ -25,6 +25,7 @@ class Report:
         self.__url = url
         self.__defiances = []
         self.__recommendations = []
+        self.__screenshot = None
 
         self.__init_style()
         self.__init_header()
@@ -45,26 +46,34 @@ class Report:
         self.__doc.add_paragraph(f"Дата проверки: {date}")
         self.__doc.add_paragraph(f"Страница сайта: {self.__url}")
 
+    def set_screenshot(self, screenshot: bytes) -> None:
+        self.__doc.add_paragraph("Скриншот сайта:")
+        self.__doc.add_picture(BytesIO(screenshot), width=Mm(self.__get_text_width()))
+
+    def __get_text_width(self):
+        """
+        Returns the text width in mm.
+        """
+        section = self.__doc.sections[0]
+        return (section.page_width - section.left_margin - section.right_margin) / 36000
+
     def add_defiance(self, text: str, url: str = None, word: str = None) -> None:
         if not url:
             self.__defiances.append(text)
         else:
             self.__defiances.append({"text": text, "url": url, "word": word})
-            # self.__recommendations.append(text)
 
     def add_recommendation(self, text: str, url: str = None, word: str = None) -> None:
         if not url:
             self.__recommendations.append(text)
         else:
             self.__recommendations.append({"text": text, "url": url, "word": word})
-            # self.__recommendations.append(text)
 
     def render(self) -> BytesIO:
         if self.__defiances:
             v = self.__doc.add_paragraph(DEFIANCES_PARAGRAPH)
 
             for i, defiance in enumerate(self.__defiances, start=1):
-                # self.__doc.add_paragraph(f"{i}. {defiance}")
                 if isinstance(defiance, dict):
                     text = defiance["text"]
                     word = defiance["word"]
@@ -97,28 +106,21 @@ class Report:
         file.seek(0)
         return file
 
-    
-    def __add_hyperlink(self, paragraph: Paragraph, url: str, text: str, color="0000FF", underline=True):
-        """
-        Adds a hyperlink to a paragraph.
-
-        :param paragraph: The paragraph to which the hyperlink will be added.
-        :param url: The URL the hyperlink points to.
-        :param text: The display text for the hyperlink.
-        :param color: The color of the hyperlink text (default is blue).
-        :param underline: Whether the hyperlink text is underlined (default is True).
-        """
-        # Create the hyperlink element
+    def __add_hyperlink(
+        self, paragraph: Paragraph, url: str, text: str, color="0000FF", underline=True
+    ):
         part = paragraph.part
-        r_id = part.relate_to(url, "http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink", is_external=True)
+        r_id = part.relate_to(
+            url,
+            "http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink",
+            is_external=True,
+        )
         hyperlink = OxmlElement("w:hyperlink")
         hyperlink.set(qn("r:id"), r_id)
 
-        # Create a run within the hyperlink
         run = OxmlElement("w:r")
         r_pr = OxmlElement("w:rPr")
 
-        # Set the style (color and underline)
         if color:
             color_element = OxmlElement("w:color")
             color_element.set(qn("w:val"), color)
@@ -134,5 +136,4 @@ class Report:
         run.append(text_element)
         hyperlink.append(run)
 
-        # Append the hyperlink to the paragraph
         paragraph._element.append(hyperlink)
