@@ -23,5 +23,6 @@
   const backgroundColor =
     getInheritedBackgroundColor(el) || "rgb(255, 255, 255)";
   const textColor = computedStyle.color;
-  return [backgroundColor, textColor];
+  const fontSize = computedStyle.fontSize;
+  return [backgroundColor, textColor, fontSize];
 };

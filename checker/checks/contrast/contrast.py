@@ -31,15 +31,25 @@ class Contrast(Test):
             result = await self._execute_js_file(
                 "js/get-info.js", self._page.locator(f"[AccessScan='{uuid}']")
             )
-            if not isinstance(result, list) or len(result) != 2:
+            if not isinstance(result, list) or len(result) != 3:
                 continue
-            background_color, text_color = map(self.__parse_rgb, result)
+            background_color, text_color, font_size = result
+            background_color, text_color = map(
+                self.__parse_rgb, [background_color, text_color]
+            )
+
+            font_size_px = float(re.search(r"\d+", font_size).group())
+            is_large_text = font_size_px >= 24 or (
+                font_size_px >= 18.67 and "bold" in result[2]
+            )
+
+            contrast_threshold = 3.0 if is_large_text else 4.5
             L1 = self.__calculate_relative_luminance(text_color)
             L2 = self.__calculate_relative_luminance(background_color)
             if L1 < L2:
                 L1, L2 = L2, L1
             contrast_ratio = (L1 + 0.05) / (L2 + 0.05)
-            if contrast_ratio >= 4.5:
+            if contrast_ratio >= contrast_threshold:
                 with_right_contrast += 1
         if not total:
             total = 1
