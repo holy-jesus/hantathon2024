@@ -12,6 +12,9 @@ class Alt(Test):
     NAME = "Описание картинок"
     DESCRIPTION = """Тест проверяет, что изображения на сайте имеют атрибуты `alt` 
 или эквивалентные текстовые описания для обеспечения доступности."""
+    DEFIANCE = "Нетекстовый элемент на веб-странице не содержит атрибута alt с текстовым описанием."
+    RECOMMENDATION = """Убедитесь, что все изображения и графические элементы имеют атрибут alt с 
+описанием. Обратите внимание, что пустой атрибут alt (alt="") можно использовать только для декоративных элементов."""
 
     async def run(self):
         """
@@ -34,4 +37,8 @@ class Alt(Test):
         if not total:  # Если изображений нет, считаем, что все корректно
             total = 1
             with_alt = 1
-        return Result(Alt, (with_alt / total) * 100)
+        final_score = (with_alt / total) * 100
+        if final_score != 100.0:
+            self._report.add_defiance(self.DEFIANCE)
+            self._report.add_recommendation(self.RECOMMENDATION)
+        return Result(Alt, final_score)

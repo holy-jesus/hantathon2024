@@ -12,7 +12,11 @@ class Buttons(Test):
     NAME = "Описание кнопок"
     DESCRIPTION = """нетекстовая информация, размещаемая на официальном сайте, 
 представлена в альтернативной версии, доступной для чтения при помощи вспомогательных 
-технологий, включая программы экранного доступа"""
+технологий, включая программы экранного доступа."""
+    DEFIANCE = "Отсутствуют текстовые метки и инструкции для полей форм ввода."
+    RECOMMENDATION = (
+        "Обеспечьте наличие текстовых меток и инструкций для всех полей ввода."
+    )
 
     async def run(self):
         """
@@ -35,7 +39,11 @@ class Buttons(Test):
         if not total:  # Если кнопок нет, считаем, что все корректно
             total = 1
             with_aria_label = 1
+        final_score = (with_aria_label / total) * 100
+        if final_score != 100.0:
+            self._report.add_defiance(self.DEFIANCE)
+            self._report.add_recommendation(self.RECOMMENDATION)
         return Result(
             Buttons,
-            (with_aria_label / total) * 100,
+            final_score,
         )

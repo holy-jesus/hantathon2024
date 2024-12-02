@@ -9,6 +9,7 @@ from loguru import logger
 
 if TYPE_CHECKING:
     from .result import Result
+    from ...report import Report
 
 
 class Test:
@@ -21,7 +22,7 @@ class Test:
     DEFIANCE: str  # Нарушение, которое тест проверяет
     RECOMMENDATION: str  # Рекомендация для устранения нарушения
 
-    def __init__(self, browser: Browser, page: Page) -> None:
+    def __init__(self, browser: Browser, page: Page, report: "Report") -> None:
         """
         Инициализирует тест.
 
@@ -31,6 +32,7 @@ class Test:
         """
         self._browser = browser
         self._page = page
+        self._report = report
 
     async def run(self) -> "Result":
         """

@@ -10,8 +10,8 @@ class Contrast(Test):
 
     NAME = "Контраст текста"
     DESCRIPTION = """информация, размещаемая на официальном сайте, соответствует 
-критериям оптимальной контрастности, предусмотренным национальным стандартом Российской Федерации"""
-    DEFIANCE = "Недостаточная контрастность текста"
+критериям оптимальной контрастности, предусмотренным национальным стандартом Российской Федерации."""
+    DEFIANCE = "Недостаточная контрастность текста."
     RECOMMENDATION = """Обеспечьте контрастность 4.5:1 для обычного текста и 3:1 для крупного текста."""
 
     async def run(self):
@@ -54,9 +54,13 @@ class Contrast(Test):
         if not total:
             total = 1
             with_right_contrast = 1
+        final_score = (with_right_contrast / total) * 100
+        if final_score != 100.0:
+            self._report.add_defiance(self.DEFIANCE)
+            self._report.add_recommendation(self.RECOMMENDATION)
         return Result(
             Contrast,
-            (with_right_contrast / total) * 100,
+            final_score,
         )
 
     def __parse_rgb(self, color_str: str) -> tuple[int, int, int]:

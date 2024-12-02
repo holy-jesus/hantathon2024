@@ -2,6 +2,7 @@ from playwright.async_api import async_playwright
 from loguru import logger
 
 from checks import Test, Result, tests
+from report import Report
 
 
 class Checker:
@@ -34,6 +35,7 @@ class Checker:
                   зависит от реализации метода `run()` в классе Test.
         """
         logger.info(f"Начинаю проводить тесты для {url}")
+        report = Report(url)
 
         if not tests:
             tests = self.get_available_tests()
@@ -51,7 +53,7 @@ class Checker:
             for test in tests:
                 logger.info(f'Начинаю тест "{test.NAME}"')
                 try:
-                    test: Test = test(browser, page)
+                    test: Test = test(browser, page, report)
                     test_result = await test.run()
                     results.append(test_result)
                     total += test_result.percentage
@@ -65,4 +67,7 @@ class Checker:
                 print(
                     f"Критерий: {result.test.NAME} | Соответствие: {result.percentage}"
                 )
+        file = report.render()
+        with open("report.docx", "wb") as f:
+            f.write(file.getvalue())
         return results
