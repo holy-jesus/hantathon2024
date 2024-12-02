@@ -14,6 +14,7 @@ DOCUMENT_TITLE = (
 DEFIANCES_PARAGRAPH = "Выявленные нарушения:"
 NO_DEFIANCES = "Нарушений нету."
 RECOMMENDATIONS_PARAGRAPH = "Рекомендации:"
+XPATHS_PARAGRAPH = "Проблемные элементы:"
 NO_RECOMMENDATIONS = "Рекомендаций нету."
 FONT_NAME = "Times New Roman"
 FONT_SIZE = Pt(16)
@@ -25,7 +26,7 @@ class Report:
         self.__url = url
         self.__defiances = []
         self.__recommendations = []
-        self.__screenshot = None
+        self.__xpaths = []
 
         self.__init_style()
         self.__init_header()
@@ -69,6 +70,9 @@ class Report:
         else:
             self.__recommendations.append({"text": text, "url": url, "word": word})
 
+    def add_xpaths(self, xpaths: list[str]) -> None:
+        self.__xpaths.append(xpaths)
+
     def render(self) -> BytesIO:
         if self.__defiances:
             v = self.__doc.add_paragraph(DEFIANCES_PARAGRAPH)
@@ -100,6 +104,15 @@ class Report:
         else:
             r = self.__doc.add_paragraph(NO_RECOMMENDATIONS)
         r.runs[0].font.bold = True
+
+        if self.__xpaths:
+            x = self.__doc.add_paragraph(XPATHS_PARAGRAPH)
+            x.runs[0].font.bold = True
+            for i, xpaths in enumerate(self.__xpaths, start=1):
+                if not xpaths:
+                    continue
+                text = "\n".join(xpaths)
+                paragraph = self.__doc.add_paragraph(f"{i}. {text}")
 
         file = BytesIO()
         self.__doc.save(file)

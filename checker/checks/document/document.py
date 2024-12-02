@@ -60,6 +60,7 @@ class Document(Test):
         if final_score != 100.0:
             self._report.add_defiance(self.DEFIANCE)
             self._report.add_recommendation(self.RECOMMENDATION)
+            self._report.add_xpaths(None)
         return Result(Document, final_score)
 
     async def __test_pdf(self, file_link: str) -> float:
@@ -112,6 +113,7 @@ class Document(Test):
         if final_score != 100.0:
             self._report.add_defiance(DEFIANCE, file_link, "Документ")
             self._report.add_recommendation(RECOMMENDATION, file_link, "Документ")
+            self._report.add_xpaths(None)
         return final_score
 
     def __check_struct(self, file: bytes, file_link: str) -> float:
@@ -133,6 +135,7 @@ class Document(Test):
         if final_score != 100.0:
             self._report.add_defiance(DEFIANCE, file_link, "Документ")
             self._report.add_recommendation(RECOMMENDATION, file_link, "Документ")
+            self._report.add_xpaths(None)
         return final_score
 
     def __check_alt_text(self, file: bytes, file_link: str) -> float:
@@ -165,6 +168,7 @@ class Document(Test):
         if final_score != 100.0:
             self._report.add_defiance(DEFIANCE, file_link, "Документ")
             self._report.add_recommendation(RECOMMENDATION, file_link, "Документ")
+            self._report.add_xpaths(None)
         return final_score
 
     def __check_metadata(self, file: bytes, file_link: str) -> float:
@@ -192,4 +196,5 @@ class Document(Test):
         if final_score != 100.0:
             self._report.add_defiance(DEFIANCE, file_link, "Документ")
             self._report.add_recommendation(RECOMMENDATION, file_link, "Документ")
+            self._report.add_xpaths(None)
         return final_score

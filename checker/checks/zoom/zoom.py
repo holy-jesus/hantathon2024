@@ -23,4 +23,5 @@ class Zoom(Test):
         if final_score != 100.0:
             self._report.add_defiance(self.DEFIANCE)
             self._report.add_recommendation(self.RECOMMENDATION)
+            self._report.add_xpaths(None)
         return Result(Zoom, final_score)

@@ -33,12 +33,14 @@ class Alt(Test):
 
         # Проверяем, что результат корректен и содержит два значения: общее количество и количество с описанием
         assert isinstance(result, list) and len(result) == 2
-        total, with_alt = result
+        total, xpaths = result
+        len_without_alt = len(xpaths)
         if not total:  # Если изображений нет, считаем, что все корректно
             total = 1
-            with_alt = 1
-        final_score = (with_alt / total) * 100
+            len_without_alt = 1
+        final_score = 100 - ((len_without_alt / total) * 100)
         if final_score != 100.0:
             self._report.add_defiance(self.DEFIANCE)
             self._report.add_recommendation(self.RECOMMENDATION)
+            self._report.add_xpaths(xpaths)
         return Result(Alt, final_score)
