@@ -1,7 +1,7 @@
 from playwright.async_api import async_playwright
 from loguru import logger
 
-from .checks import Test, tests
+from checks import Test, Result, tests
 
 
 class Checker:
@@ -26,35 +26,43 @@ class Checker:
 
         Args:
             url (str): URL страницы, которую нужно протестировать.
-            tests (list[Test], optional): Список тестов, которые нужно выполнить. 
+            tests (list[Test], optional): Список тестов, которые нужно выполнить.
                                           Если не указан, будут выполнены все доступные тесты.
 
         Returns:
-            list: Список результатов выполнения тестов. Каждый результат 
+            list: Список результатов выполнения тестов. Каждый результат
                   зависит от реализации метода `run()` в классе Test.
         """
         logger.info(f"Начинаю проводить тесты для {url}")
-        
+
         if not tests:
             tests = self.get_available_tests()
         logger.info(
             f"Буду проводить следующие тесты: {', '.join(test.NAME for test in tests)}"
         )
-        
+
         async with self.manager as p:
             browser = await p.firefox.launch(headless=True)
             page = await browser.new_page()
             await page.goto(url)
-            
-            results = []
+
+            results: list[Result] = []
+            total = 0
             for test in tests:
                 logger.info(f'Начинаю тест "{test.NAME}"')
                 try:
                     test: Test = test(browser, page)
-                    results.append(await test.run())
+                    test_result = await test.run()
+                    results.append(test_result)
+                    total += test_result.percentage
                     logger.debug(f'Тест "{test.NAME}" завершен.')
                 except Exception as e:
                     logger.error(f'Произошла ошибка при обработке теста "{test.NAME}"')
                     logger.exception(e)
-        
+            print(f"Сайт проходит по ГОСТ Р 70176-2022 на {total / len(results)}")
+            print("Более подробный отчёт:")
+            for result in results:
+                print(
+                    f"Критерий: {result.test.NAME} | Соответствие: {result.percentage}"
+                )
         return results
