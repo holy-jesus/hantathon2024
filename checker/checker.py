@@ -1,8 +1,10 @@
+from io import BytesIO
+
 from playwright.async_api import async_playwright
 from loguru import logger
 
-from checks import Test, Result, tests
-from report import Report
+from .checks import Test, Result, tests
+from .report import Report
 
 
 class Checker:
@@ -21,7 +23,7 @@ class Checker:
         """
         return tests
 
-    async def run_tests(self, url: str, tests: list[Test] = None) -> list:
+    async def run_tests(self, url: str, tests: list[Test] = None) -> tuple[list[Result], BytesIO]:
         """
         Запускает указанные тесты для заданного URL.
 
@@ -69,6 +71,4 @@ class Checker:
                     f"Критерий: {result.test.NAME} | Соответствие: {result.percentage}"
                 )
         file = report.render()
-        with open("report.docx", "wb") as f:
-            f.write(file.getvalue())
-        return results
+        return results, file

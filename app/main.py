@@ -1,47 +1,59 @@
+import os
+from pathlib import Path
+from uuid import uuid4
+
 from fastapi import FastAPI, HTTPException, Request
 from pydantic import BaseModel
-from checker import Checker
-from fastapi.templating import Jinja2Templates
-from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.responses import HTMLResponse, JSONResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
+
+from checker import Checker
+
 
 checker = Checker()
 app = FastAPI()
 
-templates = Jinja2Templates(directory="app/templates")
+path = Path(os.getenv("front"))
 
-app.mount("/static", StaticFiles(directory="app/static"), name="static")
+
+app.mount("/assets", StaticFiles(directory=path.parent / "assets"), name="assets")
+files = []
+
 
 class SiteURL(BaseModel):
     url: str = None
 
+
 @app.get("/", response_class=HTMLResponse)
 async def read_root(request: Request):
-    return templates.TemplateResponse("page2.html", {"request": request})
+    return path.read_text()
+
 
 @app.post("/check/", response_class=JSONResponse)
-async def read_site(site_url: SiteURL):
-    print(site_url)
-    # result = await checker.run_tests(site_url.url)
-    # return {"result": result}
+async def read_site(request: Request):
+    url = (await request.body()).decode()
+    results, file = await checker.run_tests(url)
 
-    # Здесь будет логика для анализа URL.
-    
-    # Условно, что то вроде:
-    response_data = {
-        "rating": 85,
-        "issues": [
-            "Недостаточный контраст текста",
-            "Отсутствие альтернативного текста для изображений",
-            "Нарушенная структура заголовков",
-        ],
-        "reportLink": site_url.url
-    }
+    response = {"total": 0, "defiances": [], "recommendations": []}
+    for result in results:
+        response["total"] += result.percentage
+        response[result.test.__name__] = result.percentage
+        if result.percentage != 100.0:
+            response["defiances"].append(result.test.DEFIANCE)
+            response["recommendations"].append(result.test.RECOMMENDATION)
+    response["total"] = response["total"] / len(results)
+    response["file"] = str(uuid4()) + ".docx"
+    with open(f"/tmp/{response['file']}", "wb") as f:
+        f.write(file.getvalue())
+    files.append(response["file"])
+    return response
 
-    # response_data = {""}
-    
-    return response_data
 
+@app.get("/files/{file:str}")
+async def get_file(file: str):
+    if file not in files:
+        return
+    return FileResponse(f"/tmp/{file}")
 
 @app.exception_handler(HTTPException)
 async def http_exception_handler(request, exc: HTTPException):
@@ -50,4 +62,5 @@ async def http_exception_handler(request, exc: HTTPException):
 
 if __name__ == "__main__":
     import uvicorn
+
     uvicorn.run(app, host="127.0.0.1", port=8000)
