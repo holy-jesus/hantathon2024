@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 from uuid import uuid4
+import tempfile
 
 from fastapi import FastAPI, HTTPException, Request
 from pydantic import BaseModel
@@ -43,7 +44,7 @@ async def read_site(request: Request):
             response["recommendations"].append(result.test.RECOMMENDATION)
     response["total"] = response["total"] / len(results)
     response["file"] = str(uuid4()) + ".docx"
-    with open(f"/tmp/{response['file']}", "wb") as f:
+    with open(Path(tempfile.gettempdir()) / response['file'], "wb") as f:
         f.write(file.getvalue())
     files.append(response["file"])
     return response
@@ -54,6 +55,7 @@ async def get_file(file: str):
     if file not in files:
         return
     return FileResponse(f"/tmp/{file}")
+
 
 @app.exception_handler(HTTPException)
 async def http_exception_handler(request, exc: HTTPException):
